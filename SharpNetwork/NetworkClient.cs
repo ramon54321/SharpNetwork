@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
@@ -14,6 +13,7 @@ namespace SharpNetwork
         private readonly NetworkStream _networkStream;
 
         private byte[] _readBuffer;
+        private bool _isConnected;
 
         /**
          * Creates a new client and connects to the specified host, then sets the stream variable and starts listening.
@@ -29,6 +29,12 @@ namespace SharpNetwork
 
             // -- Connect to host
             _tcpClient.Connect(_hostname, _port);
+
+            // -- Call OnConnect
+            InternalOnConnect();
+
+            // -- Set manual connected flag
+            _isConnected = true;
 
             // -- Get stream from tcp client
             _networkStream = _tcpClient.GetStream();
@@ -52,7 +58,9 @@ namespace SharpNetwork
             }
             catch (Exception e)
             {
-                OnDisconnect();
+                Console.WriteLine("Exception in BeginRead");
+                Close();
+                return;
             }
         }
 
@@ -61,18 +69,22 @@ namespace SharpNetwork
          */
         private void HandleRead(IAsyncResult result)
         {
-            // -- Call read again
-            NextRead();
-
-            // -- Checking
-            if (!_tcpClient.Connected)
-                return;
-
-            if (!result.IsCompleted)
+            // -- Check manual connection flag
+            if (!_isConnected)
                 return;
 
             // -- Get number of bytes in received data
-            int numberOfBytes = _networkStream.EndRead(result);
+            int numberOfBytes = 0;
+            try
+            {
+                numberOfBytes = _networkStream.EndRead(result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception in EndRead");
+                Close();
+                return;
+            }
             
             // -- Create new array
             byte[] messageBytes = new byte[numberOfBytes];
@@ -82,6 +94,9 @@ namespace SharpNetwork
 
             // -- Call virtual method - OnMessageReceived
             OnMessageReceived(messageBytes);
+
+            // -- Call read again
+            NextRead();
         }
 
         /**
@@ -89,36 +104,72 @@ namespace SharpNetwork
          */
         public void SendMessage(byte[] messageBytes)
         {
-            _networkStream.Write(messageBytes, 0, messageBytes.Length);
+            // TODO: Client keeps trying to write even after it disconnected
+            try
+            {
+                _networkStream.Write(messageBytes, 0, messageBytes.Length);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Exception in Write");
+                Close();
+                return;
+            }
         }
 
         /**
          * Virtual method to deal with received message.
          * Called from HandleRead delegate.
          */
-        protected virtual void OnMessageReceived(byte[] message)
+        public virtual void OnMessageReceived(byte[] message)
         {
             string str = Encoding.UTF8.GetString(message);
             Console.WriteLine(str);
         }
 
         /**
+         * Called when the client connects.
+         */
+        public virtual void OnConnect()
+        {
+            Console.WriteLine("Connected.");
+        }
+
+        /**
          * Called when the connection to the host is interupted.
          */
-        protected virtual void OnDisconnect()
+        public virtual void OnDisconnect()
         {
             Console.WriteLine("Disconnected");
         }
 
         /**
-         * Checks if the client is connected, and closes it if it is.
+         * Internal methods are called by library.
+         */
+        private void InternalOnConnect()
+        {
+            OnConnect();
+        }
+        private void InternalOnDisconnect()
+        {
+            OnDisconnect();
+        }
+
+        /**
+         * Closes client socket, stream and tcp client. Sets manual flag to false. Fires OnDisconnect.
          */
         public void Close()
         {
-            if(!_tcpClient.Connected)
+            if (!_isConnected)
                 return;
 
+            _tcpClient.Client.Close();
+            _networkStream.Close();
             _tcpClient.Close();
+
+            _isConnected = false;
+
+            InternalOnDisconnect();
         }
     }
 }

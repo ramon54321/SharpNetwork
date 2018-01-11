@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace SharpNetwork
 {
     public class NetworkServer
     {
+        public static readonly int BufferSize = 4096;
+
         private readonly string _ipAddress;
         private readonly int _port;
 
@@ -52,30 +53,35 @@ namespace SharpNetwork
          */
         private void HandleAcceptClient(IAsyncResult result)
         {
-            // -- Listen again
-            _tcpListener.BeginAcceptTcpClient(HandleAcceptClient, _tcpListener);
-
             // -- Get tcp client
             TcpClient newTcpClient = _tcpListener.EndAcceptTcpClient(result);
 
             // -- Create new client
             Guid newServerClientGuid = Guid.NewGuid();
-            ServerClient newServerClient = new ServerClient(newTcpClient, newServerClientGuid);
-
-            // -- Add client to list
-            _serverClients.Add(newServerClientGuid, newServerClient);
+            ServerClient newServerClient = new ServerClient(this, newTcpClient, newServerClientGuid);
 
             // -- Call OnClientConnected
             OnClientConnected(newServerClient);
+
+            // -- Listen again
+            _tcpListener.BeginAcceptTcpClient(HandleAcceptClient, _tcpListener);
         }
 
         /**
-         * Called when a client connects.
+         * Called when a client connects. Is called after OnConnect inside client itself.
          */
-        protected virtual void OnClientConnected(ServerClient serverClient)
+        public void OnClientConnected(ServerClient serverClient)
         {
-            byte[] messageBytes = Encoding.UTF8.GetBytes("Welcome...");
-            serverClient.SendMessage(messageBytes);
+            // -- Add client to list
+            _serverClients.Add(serverClient.GetGuid(), serverClient);
+        }
+
+        /**
+         * Called from the client after it disconnects.
+         */
+        public void OnClientDisconnected(ServerClient serverClient)
+        {
+            _serverClients.Remove(serverClient.GetGuid());
         }
 
         /**

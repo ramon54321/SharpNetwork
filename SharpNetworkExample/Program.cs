@@ -8,8 +8,12 @@ namespace SharpNetworkExample
     {
         static void Main(string[] args)
         {
-            if(args.Length < 1)
+            if (args.Length < 1)
+            {
                 return;
+                args = new string[1];
+                args[0] = "client";
+            }
 
             if (args[0] == "server")
             {
@@ -52,7 +56,17 @@ namespace SharpNetworkExample
             NetworkClient networkClient = new NetworkClient("127.0.0.1", 7788);
 
             Console.WriteLine("End");
-            Console.Read();
+
+            while (true)
+            {
+                string command = Console.ReadLine();
+
+                if (command == String.Empty)
+                    break;
+
+                byte[] messageBytes = Encoding.UTF8.GetBytes(command);
+                networkClient.SendMessage(messageBytes);
+            }
 
             networkClient.Close();
         }
