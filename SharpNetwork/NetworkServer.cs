@@ -59,7 +59,7 @@ namespace SharpNetwork
             TcpClient newTcpClient = _tcpListener.EndAcceptTcpClient(result);
 
             // -- Create new client
-            Guid newServerClientGuid = new Guid();
+            Guid newServerClientGuid = Guid.NewGuid();
             ServerClient newServerClient = new ServerClient(newTcpClient, newServerClientGuid);
 
             // -- Add client to list

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using SharpNetwork;
 
 namespace SharpNetworkExample
@@ -38,7 +39,8 @@ namespace SharpNetworkExample
 
                 foreach (var serverClientKeyValuePair in networkServer.GetServerClients())
                 {
-                    serverClientKeyValuePair.Value.SendMessage(command);
+                    byte[] messageBytes = Encoding.UTF8.GetBytes(command);
+                    serverClientKeyValuePair.Value.SendMessage(messageBytes);
                 }
             }
 
