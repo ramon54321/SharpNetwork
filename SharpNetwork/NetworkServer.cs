@@ -15,6 +15,9 @@ namespace SharpNetwork
 
         private byte[] _readBuffer;
 
+        /**
+         * Set up tcp listener, init client list and start accepting tcp clients.
+         */
         public NetworkServer(string ipAddress, int port, int bufferSize = 4096)
         {
             // -- Define private variables
@@ -37,10 +40,21 @@ namespace SharpNetwork
         private readonly SortedList<Guid, ServerClient> _serverClients;
 
         /**
+         * Get the enumerator for the server client list.
+         */
+        public SortedList<Guid, ServerClient> GetServerClients()
+        {
+            return _serverClients;
+        }
+
+        /**
          * Delegate callback when tcp client is accepted.
          */
         private void HandleAcceptClient(IAsyncResult result)
         {
+            // -- Listen again
+            _tcpListener.BeginAcceptTcpClient(HandleAcceptClient, _tcpListener);
+
             // -- Get tcp client
             TcpClient newTcpClient = _tcpListener.EndAcceptTcpClient(result);
 
@@ -55,9 +69,13 @@ namespace SharpNetwork
             OnClientConnected(newServerClient);
         }
 
+        /**
+         * Called when a client connects.
+         */
         protected virtual void OnClientConnected(ServerClient serverClient)
         {
-            serverClient.SendMessage("Welcome...");
+            byte[] messageBytes = Encoding.UTF8.GetBytes("Welcome...");
+            serverClient.SendMessage(messageBytes);
         }
 
         /**

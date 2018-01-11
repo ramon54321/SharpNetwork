@@ -28,7 +28,19 @@ namespace SharpNetworkExample
             NetworkServer networkServer = new NetworkServer("127.0.0.1", 7788);
 
             Console.WriteLine("End");
-            Console.Read();
+
+            while (true)
+            {
+                string command = Console.ReadLine();
+
+                if(command == String.Empty)
+                    break;
+
+                foreach (var serverClientKeyValuePair in networkServer.GetServerClients())
+                {
+                    serverClientKeyValuePair.Value.SendMessage(command);
+                }
+            }
 
             networkServer.Close();
         }

@@ -11,6 +11,9 @@ namespace SharpNetwork
         private readonly Guid _guid;
         private readonly NetworkStream _networkStream;
 
+        /**
+         * Set up tcp client for client and get network stream.
+         */
         public ServerClient(TcpClient tcpClient, Guid guid)
         {
             // -- Define private variables
@@ -21,9 +24,11 @@ namespace SharpNetwork
             _networkStream = _tcpClient.GetStream();
         }
 
-        public void SendMessage(string message)
+        /**
+         * Send raw bytes to client.
+         */
+        public virtual void SendMessage(byte[] messageBytes)
         {
-            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
             _networkStream.Write(messageBytes, 0, messageBytes.Length);
         }
     }

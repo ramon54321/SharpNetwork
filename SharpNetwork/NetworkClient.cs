@@ -11,7 +11,7 @@ namespace SharpNetwork
         private readonly int _port;
 
         private readonly TcpClient _tcpClient;
-        private readonly Stream _stream;
+        private readonly NetworkStream _networkStream;
 
         private byte[] _readBuffer;
 
@@ -31,13 +31,29 @@ namespace SharpNetwork
             _tcpClient.Connect(_hostname, _port);
 
             // -- Get stream from tcp client
-            _stream = _tcpClient.GetStream();
+            _networkStream = _tcpClient.GetStream();
 
             // -- Init readBuffer
             _readBuffer = new byte[bufferSize];
 
             // -- Start reading Async
-            _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, HandleRead, null);
+            NextRead();
+        }
+
+        /**
+         * Calls the async read.
+         * Used just to allow a try catch around any call to read.
+         */
+        private void NextRead()
+        {
+            try
+            {
+                _networkStream.BeginRead(_readBuffer, 0, _readBuffer.Length, HandleRead, null);
+            }
+            catch (Exception e)
+            {
+                OnDisconnect();
+            }
         }
 
         /**
@@ -45,6 +61,9 @@ namespace SharpNetwork
          */
         private void HandleRead(IAsyncResult result)
         {
+            // -- Call read again
+            NextRead();
+
             // -- Checking
             if (!_tcpClient.Connected)
                 return;
@@ -53,7 +72,7 @@ namespace SharpNetwork
                 return;
 
             // -- Get number of bytes in received data
-            int numberOfBytes = _stream.EndRead(result);
+            int numberOfBytes = _networkStream.EndRead(result);
             
             // -- Create new array
             byte[] messageBytes = new byte[numberOfBytes];
@@ -66,6 +85,14 @@ namespace SharpNetwork
         }
 
         /**
+         * Send raw bytes to host.
+         */
+        public void SendMessage(byte[] messageBytes)
+        {
+            _networkStream.Write(messageBytes, 0, messageBytes.Length);
+        }
+
+        /**
          * Virtual method to deal with received message.
          * Called from HandleRead delegate.
          */
@@ -73,6 +100,14 @@ namespace SharpNetwork
         {
             string str = Encoding.UTF8.GetString(message);
             Console.WriteLine(str);
+        }
+
+        /**
+         * Called when the connection to the host is interupted.
+         */
+        protected virtual void OnDisconnect()
+        {
+            Console.WriteLine("Disconnected");
         }
 
         /**
