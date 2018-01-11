@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpNetwork", "SharpNetwor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpNetworkTests", "SharpNetworkTests\SharpNetworkTests.csproj", "{3E999070-C431-4C00-B52F-D9A190744FD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpNetworkExample", "SharpNetworkExample\SharpNetworkExample.csproj", "{AA7DE8FC-BED3-480E-98FB-0E2F059CBBDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3E999070-C431-4C00-B52F-D9A190744FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E999070-C431-4C00-B52F-D9A190744FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E999070-C431-4C00-B52F-D9A190744FD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA7DE8FC-BED3-480E-98FB-0E2F059CBBDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7DE8FC-BED3-480E-98FB-0E2F059CBBDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7DE8FC-BED3-480E-98FB-0E2F059CBBDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7DE8FC-BED3-480E-98FB-0E2F059CBBDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -36,7 +36,7 @@ namespace SharpNetwork
             // -- Init readBuffer
             _readBuffer = new byte[bufferSize];
 
-            // -- Start listening
+            // -- Start reading Async
             _stream.BeginRead(_readBuffer, 0, _readBuffer.Length, HandleRead, null);
         }
 
@@ -54,21 +54,25 @@ namespace SharpNetwork
 
             // -- Get number of bytes in received data
             int numberOfBytes = _stream.EndRead(result);
-
-            // -- Decode bytes to string - from UTF8
-            string message = Encoding.UTF8.GetString(_readBuffer, 0, numberOfBytes);
+            
+            // -- Create new array
+            byte[] messageBytes = new byte[numberOfBytes];
+                
+            // -- Copy buffer to array
+            Array.Copy(_readBuffer, messageBytes, numberOfBytes);
 
             // -- Call virtual method - OnMessageReceived
-            OnMessageReceived(message);
+            OnMessageReceived(messageBytes);
         }
 
         /**
          * Virtual method to deal with received message.
          * Called from HandleRead delegate.
          */
-        protected virtual void OnMessageReceived(string message)
+        protected virtual void OnMessageReceived(byte[] message)
         {
-            Console.WriteLine(message);
+            string str = Encoding.UTF8.GetString(message);
+            Console.WriteLine(str);
         }
 
         /**
