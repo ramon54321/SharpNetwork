@@ -8,6 +8,7 @@ namespace SharpNetworkExample
     {
         static void Main(string[] args)
         {
+            // -- Some trickery to deal with no arguments - DEVELOPMENT ONLY
             if (args.Length < 1)
             {
                 return;
@@ -15,6 +16,9 @@ namespace SharpNetworkExample
                 args[0] = "client";
             }
 
+            /**
+             * Start the app in correct mode given the argument.
+             */
             if (args[0] == "server")
             {
                 Console.WriteLine("\tStarting Server");
@@ -28,6 +32,9 @@ namespace SharpNetworkExample
 
         }
 
+        /**
+         * Start as Server.
+         */
         static void StartServer()
         {
             NetworkServer networkServer = new NetworkServer("127.0.0.1", 7788);
@@ -51,6 +58,9 @@ namespace SharpNetworkExample
             networkServer.Close();
         }
 
+        /**
+         * Start as Client.
+         */
         static void StartClient()
         {
             NetworkClient networkClient = new NetworkClient("127.0.0.1", 7788);
