@@ -126,8 +126,7 @@ namespace SharpNetwork
          */
         public virtual void OnMessageReceived(byte[] message)
         {
-            string str = Encoding.UTF8.GetString(message);
-            Console.WriteLine(str);
+            Logger.Log(LogLevel.L2_Info, "I just received a message.", "Network.Events.Client");
         }
 
         /**
