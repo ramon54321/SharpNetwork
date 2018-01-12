@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+using SharpLogger;
 
 namespace SharpNetwork
 {
@@ -60,7 +61,7 @@ namespace SharpNetwork
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception in BeginRead");
+                Logger.Log(LogLevel.L4_RecoverableError, "Exception in BeginRead", "Network.Errors");
                 Close();
                 return;
             }
@@ -83,7 +84,7 @@ namespace SharpNetwork
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception in EndRead");
+                Logger.Log(LogLevel.L4_RecoverableError, "Exception in EndRead", "Network.Errors");
                 Close();
                 return;
             }
@@ -112,7 +113,7 @@ namespace SharpNetwork
             }
             catch (Exception)
             {
-                Console.WriteLine("Exception in Write");
+                Logger.Log(LogLevel.L4_RecoverableError, "Exception in Write", "Network.Errors");
                 Close();
                 return;
             }
@@ -124,8 +125,7 @@ namespace SharpNetwork
          */
         public virtual void OnMessageReceived(byte[] message)
         {
-            string str = Encoding.UTF8.GetString(message);
-            Console.WriteLine(_guid + " says: " + str);
+            Logger.Log(LogLevel.L2_Info, "I just received a message.", "Network.Events.Client");
         }
 
         /**
@@ -133,7 +133,7 @@ namespace SharpNetwork
          */
         public virtual void OnConnect()
         {
-            Console.WriteLine("User, " + _guid + ", connected.");
+            Logger.Log(LogLevel.L2_Info, "I just connected.", "Network.Events.Client");
         }
 
         /**
@@ -141,7 +141,7 @@ namespace SharpNetwork
          */
         public virtual void OnDisconnect()
         {
-            Console.WriteLine("User, " + _guid + ", disconnected.");
+            Logger.Log(LogLevel.L2_Info, "I just disconnected.", "Network.Events.Client");
         }
 
         /**

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+using SharpLogger;
 
 namespace SharpNetwork
 {
@@ -58,7 +59,7 @@ namespace SharpNetwork
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception in BeginRead");
+                Logger.Log(LogLevel.L4_RecoverableError, "Exception in BeginRead", "Network.Errors");
                 Close();
                 return;
             }
@@ -81,7 +82,7 @@ namespace SharpNetwork
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception in EndRead");
+                Logger.Log(LogLevel.L4_RecoverableError, "Exception in EndRead", "Network.Errors");
                 Close();
                 return;
             }
@@ -106,15 +107,14 @@ namespace SharpNetwork
         {
             if (!_isConnected)
                 return;
-
-            // TODO: Client keeps trying to write even after it disconnected
+            
             try
             {
                 _networkStream.Write(messageBytes, 0, messageBytes.Length);
             }
             catch (Exception)
             {
-                Console.WriteLine("Exception in Write");
+                Logger.Log(LogLevel.L4_RecoverableError, "Exception in Write", "Network.Errors");
                 Close();
                 return;
             }
@@ -135,7 +135,7 @@ namespace SharpNetwork
          */
         public virtual void OnConnect()
         {
-            Console.WriteLine("Connected.");
+            Logger.Log(LogLevel.L2_Info, "I just connected to the server.", "Network.Events.Client");
         }
 
         /**
@@ -143,7 +143,7 @@ namespace SharpNetwork
          */
         public virtual void OnDisconnect()
         {
-            Console.WriteLine("Disconnected");
+            Logger.Log(LogLevel.L2_Info, "I just disconnected from the server.", "Network.Events.Client");
         }
 
         /**
