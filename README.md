@@ -19,6 +19,18 @@ If you'd like to contribute, feel free to fork the repository. Pull requests are
 ![Class Diagram](http://repo.ramonbrand.ml/images/SharpNetwork/ClassDiagram.svg)
 
 ## Dev Log
+### 12 Jan 2018
+Core server and client now works as intended.
+ - Server starts and listens for connections
+ - Client starts and tries to connect to given host and port
+ - Server accepts client and adds creates new ServerClient object to contain client data
+ - Server adds the new ServerClient to its clients list
+ 
+ The server has a list of all clients, can send each client a byte[] and can receive byte[] from each client.
+ Client can send and receive byte[] to / from server.
+ 
+ The next step will be to architect and implement a system to deal with sending and receiving data in a more useful manner than just bytes.
+
 ### 11 Jan 2018
 Started the project by creating 3 simple classes, namely, NetworkServer, which acts as the server, NetworkClient, which acts as the client controller, and finally ServerClient, which stores information and the TcpClient of each client on the server.
 
