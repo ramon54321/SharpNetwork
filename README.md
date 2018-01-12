@@ -1,3 +1,5 @@
+![Logo](https://raw.githubusercontent.com/ramon54321/SharpNetwork/master/Documentation/icon/Wide@0.5x-100.jpg)
+
 # SharpNetwork
 A simple TCP networking system for .Net.
 
