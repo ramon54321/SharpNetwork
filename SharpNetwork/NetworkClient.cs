@@ -104,6 +104,9 @@ namespace SharpNetwork
          */
         public void SendMessage(byte[] messageBytes)
         {
+            if (!_isConnected)
+                return;
+
             // TODO: Client keeps trying to write even after it disconnected
             try
             {
